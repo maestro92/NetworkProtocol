@@ -35,5 +35,8 @@
     <ClInclude Include="protocol_common.h">
       <Filter>protocol</Filter>
     </ClInclude>
+    <ClInclude Include="Serializable.h">
+      <Filter>protocol</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -9,8 +9,6 @@ namespace protocol
 {
 	class BitReader
 	{
-
-
 		public:
 
 			// size of the buffer
@@ -19,7 +17,7 @@ namespace protocol
 				init(data, bytes);
 			}
 
-			uint32_t ReadBit(int bits)
+			uint32_t readBits(int bits)
 			{
 				assert(bits > 0);
 				assert(bits <= 32);
@@ -74,7 +72,15 @@ namespace protocol
 			}
 
 
+			int getBitsRead()
+			{
+				return m_bitsRead;
+			}
 
+			int getBitsRemaining()
+			{
+				return m_numMaxBits - m_bitsRead;
+			}
 		// assuming word is 32 bit
 		private:
 			const uint32_t* m_data;

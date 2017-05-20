@@ -63,11 +63,51 @@ namespace protocol
 				m_bitsWritten += bits;
 			}
 
+			// flush any remaining bits in scratch to memory at the end of write
+			// m_numScratchBits are always <= 32,
+			// usually though, if it is ever >= 32, we would have already flushed it to memory
+			void flushBits()
+			{
+				if (m_numScratchBits > 0)
+				{
+					assert(m_numScratchBits <= 32);
+					assert(m_wordIndex < m_numMaxWords);
+							
+					m_data[m_wordIndex] = host_to_network(uint32_t(m_scratch & 0xFFFFFFFF));	// we only want the lower 32bit
+					m_scratch >>= 32;
+					m_numScratchBits = 0;
+					m_wordIndex++;
+				}
+			}
 
+			// get a pointer to the data written by the bit writer
+			// corresponds to the data block passed in to the constructor
+			// I guess within this class, since we are treating it in the word level, we always deal with it as a uint32_t*
+			// but as an API, we do it in the byte level, so we return it as a uint8_t*
+			uint8_t* getData()
+			{
+				return (uint8_t*) m_data;
+			}
+
+			int getBitsWritten() const
+			{
+				return m_bitsWritten;
+			}
+
+			// this is effectively the size of the packet you should send after you have fnished bit packing values with this class
+			int getBytesWritten() const
+			{
+				return (m_bitsWritten + 7) / 8;
+			}
+
+
+			int getBitsAvailable() const
+			{
+				return m_numMaxBits - m_bitsWritten;
+			}
 
 		private:
 			uint64_t m_scratch;
-//			int m_scratchBits;
 			int m_numScratchBits;		// number of available bits in m_scratch
 			int m_bitsWritten;
 
